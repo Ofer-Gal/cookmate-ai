@@ -1,5 +1,7 @@
 import { Stack } from "expo-router";
 import { useFonts } from 'expo-font';
+import { UserContext } from "@/context/UserContext";
+import { useState } from "react";
 // import { LogtoProvider, LogtoConfig } from '@logto/rn';
 
 // const config: LogtoConfig = {
@@ -14,17 +16,24 @@ export default function RootLayout() {
     'Outfit': require('@/assets/fonts/Outfit-Regular.ttf'),
     'Outfit-bold': require('@/assets/fonts/Outfit-Bold.ttf'),
   });
-
+    const[user, setUser] = useState(null);
 
   return (
     // <LogtoProvider config={config}>
+    <UserContext.Provider value={{ user, setUser }}>
       <Stack>
         <Stack.Screen name="landing"
           options={{
             headerShown: false
           }}
         />
+        <Stack.Screen name="(tabs)"
+          options={{
+            headerShown: false
+          }}
+        />
       </Stack>
+    </UserContext.Provider>
     // </LogtoProvider>
   );
 }

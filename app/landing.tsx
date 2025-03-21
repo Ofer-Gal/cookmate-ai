@@ -2,7 +2,7 @@ import { Image, View, StyleSheet, Text, TouchableOpacity } from 'react-native'
 import { Marquee } from '@animatereactnative/marquee'
 import React from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import colors from '@/services/colors'
+import colors from '@/services/Colors'
 
 // import { useLogto } from '@logto/rn';
 
@@ -63,7 +63,7 @@ export default function Langing() {
                 <TouchableOpacity style={styles.button}
                     // onPress={async () => signIn('io.logto://callback')} 
                     onPress={() => console.log('pressed')}
-                    >
+                >
                     <Text style={{ color: colors.WHITE, textAlign: 'center', fontSize: 20 }}>Get Started</Text>
                 </TouchableOpacity>
 
