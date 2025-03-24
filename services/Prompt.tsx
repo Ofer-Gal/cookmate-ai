@@ -1,10 +1,13 @@
-EXPO_PUBLIC_STRAPI_API_KEY=082d630661f9f915ec43de868d1ae5a59faa2c847a57cfc2b5741af1e22c189079fb99446655bd215549b164e55d667670612f87a7c2fb7ef729392c141d7eafda2132c5aa6b058687c188a3b317c3ccb6af62035a64b8f083f70b0a36c4cdfcbc2b94ae116986379b8a5499a7d5d5f2a79bdf117b9b598aa1fc882d7fa0fe1a
-EXPO_PUBLIC_OPENAI_API_KEY=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
-GENERATE_RECIPE_OPTION_PROMPT= `:Depends on user instruction create 3 different Recipe variant with Recipe Name with Emoji,
+const prompts = {
+    GENERATE_RECIPE_OPTION_PROMPT: `:Depends on user instruction create 3 different Recipe variant with Recipe Name with Emoji,
     2 line description and main ingredient list in JSON format with field recipeName,description,ingredients (without size) only`
-GENERATE_COMPLETE_RECIPE_PROMPT= `
+    ,
+    GENERATE_COMPLETE_RECIPE_PROMPT: `
     - As per recipe Name and Description, Give me all list of ingredients as ingredient,
     - emoji icons for each ingredient as icon, quantity as quantity, along with detail step by step recipe as steps
     - Total Calories as calories (only number), Minutes to cook as cookTime and serving number as serveTo
     - relastic image Text prompt as per reciepe as imagePrompt
     - Give me response in JSON format only`
+};
+
+export default prompts;

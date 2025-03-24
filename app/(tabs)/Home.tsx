@@ -1,13 +1,15 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, ScrollView} from 'react-native'
 import React from 'react'
 import Colors from '@/services/Colors'
 import IntroHead from '@/components/introHead'
 import CreateRecipe from '@/components/CreateRecipe'
+import CategoryList from '@/components/CategoryList'
+// import {  } from 'react-native-gesture-handler'
 
 
 const Home = () => {
     return (
-        <View style={{
+        <ScrollView style={{
             // flex: 1,
             height: '100%',
             backgroundColor: Colors.WHITE,padding: 20
@@ -16,9 +18,9 @@ const Home = () => {
             <IntroHead />
             {/* Recipe Generator */}
             <CreateRecipe />
-            {/* Recipe List */}
-            {/* Category */}
-        </View>
+            {/* Category  List */}
+            <CategoryList />
+        </ScrollView>
     )
 }
 export default Home

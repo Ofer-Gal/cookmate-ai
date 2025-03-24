@@ -2,7 +2,7 @@ import { Image, View, StyleSheet, Text, TouchableOpacity } from 'react-native'
 import { Marquee } from '@animatereactnative/marquee'
 import React from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import colors from '@/services/Colors'
+import Colors from '@/services/Colors'
 
 // import { useLogto } from '@logto/rn';
 
@@ -47,7 +47,7 @@ export default function Langing() {
                 </Marquee>
             </View>
             <View style={{
-                backgroundColor: colors.WHITE,
+                backgroundColor: Colors.WHITE,
                 height: '100%', padding: 20
             }}>
                 <Text style={{
@@ -57,14 +57,14 @@ export default function Langing() {
                     CookMate AI 🥯🔍 | Find, Create & Enjoy Delicious Recipes!
                 </Text>
                 <Text style={{
-                    fontFamily: 'outfit', color: colors.GRAY,
+                    fontFamily: 'outfit', color: Colors.GRAY,
                     fontSize: 17, textAlign: 'center'
                 }} >Generate delicious recipes in seconds with the power of AI🍔 🪄</Text>
                 <TouchableOpacity style={styles.button}
                     // onPress={async () => signIn('io.logto://callback')} 
                     onPress={() => console.log('pressed')}
                 >
-                    <Text style={{ color: colors.WHITE, textAlign: 'center', fontSize: 20 }}>Get Started</Text>
+                    <Text style={{ color: Colors.WHITE, textAlign: 'center', fontSize: 20 }}>Get Started</Text>
                 </TouchableOpacity>
 
             </View>
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     button: {
-        backgroundColor: colors.PRIMART,
+        backgroundColor: Colors.PRIMART,
         padding: 20,
         borderRadius: 10,
         marginTop: 20
