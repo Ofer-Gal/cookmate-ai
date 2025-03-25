@@ -23,7 +23,7 @@ const Button = ({ label, onPress, iconName = '', loading = false }: any) => {
 export default Button
 const styles = StyleSheet.create({
     button: {
-        backgroundColor: Colors.PRIMART,
+        backgroundColor: Colors.PRIMARY,
         padding: 20,
         borderRadius: 10,
         marginTop: 20,

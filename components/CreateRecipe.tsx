@@ -1,42 +1,75 @@
-import { StyleSheet, Text, View, Image, TextInput, Alert } from "react-native";
+import {
+    StyleSheet,
+    Text,
+    View,
+    Image,
+    TextInput,
+    Alert,
+    TouchableOpacity,
+} from "react-native";
 import React, { useRef } from "react";
 import Colors from "@/services/Colors";
 import Button from "./Button";
-import { AiModel } from "@/services/GlobalApi";
+import { AiModel, imageGenerator } from "@/services/GlobalApi";
 import prompts from "@/services/Prompt";
 import ActionSheet, { ActionSheetRef } from "react-native-actions-sheet";
+import LoadingDialog from "./LoadingDialog";
 
 const CreateRecipe = () => {
     const [userInput, setUserInput] = React.useState<string>();
     const [recipeOptions, setRecipeOptions] = React.useState<any[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
+    const [openloading, setOpenLoading] = React.useState<boolean>(false);
     const actionSheetRef = useRef<ActionSheetRef>(null);
 
     const onGenerate = async () => {
         if (!userInput) {
-            Alert.alert('Please enter a details to generate')
-            return
+            Alert.alert("Please enter a details to generate");
+            return;
         }
-        setLoading(true)
-        const result = await AiModel(userInput + prompts.GENERATE_RECIPE_OPTION_PROMPT );
-        const content = result?.choices[0]?.message?.content
-        console.log(content)
+        setLoading(true);
+        const result = await AiModel(
+            userInput + prompts.GENERATE_RECIPE_OPTION_PROMPT
+        );
+        const content = result?.choices[0]?.message?.content;
+        console.log(content);
         if (content) {
-            setRecipeOptions(JSON.parse(content))
+            setRecipeOptions(JSON.parse(content));
         } else {
-            Alert.alert('Failed to generate recipe options')
+            Alert.alert("Failed to generate recipe options");
         }
-        setLoading(false)
+        setLoading(false);
         actionSheetRef.current?.show();
     };
 
+    const GenerateCopmleateRecipe = async (option: any) => {
+        actionSheetRef.current?.hide();
+        setOpenLoading(true);
+        const PROMPT =
+            "RecipieName:" +
+            option.recipeName +
+            +" Description: " +
+            option.description +
+            prompts.GENERATE_COMPLETE_RECIPE_PROMPT;
+        const result = await AiModel(PROMPT);
+        const content:any = result?.choices[0]?.message?.content;
+        const JSONContent = JSON.parse(content);
+        // console.log(content);
+        // console.log(JSONContent);
+        await GenerateRecipeImage(JSONContent?.imagePrompt);
+        setOpenLoading(false);
+    };
+
+    const GenerateRecipeImage = async (prompt: string) => {
+        const result = await imageGenerator(prompt);
+        console.log(result);
+    };
     return (
         <View style={styles.container}>
             <Image
                 source={require("@/assets/images/pan3.gif")}
                 style={styles.panImage}
             />
-
             <Text style={styles.heading}>
                 Warm up your stove, let's get cooking!
             </Text>
@@ -54,16 +87,32 @@ const CreateRecipe = () => {
                 loading={loading}
                 onPress={() => onGenerate()}
             />
+            <LoadingDialog
+                visible={openloading}
+                text={"Generating Recipe..."}
+            />
+
             <ActionSheet ref={actionSheetRef}>
                 <View style={styles.actionSheetContainer}>
-                    <Text style={styles.heading}>Select Recipe</Text>
+                    <Text style={styles.heading}>Select Recipes</Text>
                     <View>
-                        {recipeOptions.map((item, index) => (
-                            <View key={index} style={styles.recepieItemContainer}>
-                                <Text style={styles.recepieName}>{item?.recipeName}</Text>
-                                <Text style={styles.recepieDescription}>{item?.description}</Text>
-                            </View>
-                        ))}
+                        {recipeOptions &&
+                            recipeOptions.map((item, index) => (
+                                <TouchableOpacity
+                                    key={index}
+                                    style={styles.recepieItemContainer}
+                                    onPress={() =>
+                                        GenerateCopmleateRecipe(item)
+                                    }
+                                >
+                                    <Text style={styles.recepieName}>
+                                        {item?.recipeName}
+                                    </Text>
+                                    <Text style={styles.recepieDescription}>
+                                        {item?.description}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
                     </View>
                 </View>
             </ActionSheet>

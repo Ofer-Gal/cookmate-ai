@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     button: {
-        backgroundColor: Colors.PRIMART,
+        backgroundColor: Colors.PRIMARY,
         padding: 20,
         borderRadius: 10,
         marginTop: 20
