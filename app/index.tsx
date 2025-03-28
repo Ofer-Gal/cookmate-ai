@@ -28,6 +28,7 @@ export default function Index() {
                 email: email,
                 name: 'Ofer Gal',
                 picture: '123456',
+                credits:10,
                 pref: 'user pref 3'
             }); //set user
         }

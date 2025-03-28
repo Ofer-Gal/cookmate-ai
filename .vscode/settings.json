@@ -18,5 +18,8 @@
         "titleBar.inactiveBackground": "#83ee8499",
         "titleBar.inactiveForeground": "#15202b99"
     },
-    "peacock.color": "#83ee84"
+    "peacock.color": "#83ee84",
+    "cSpell.words": [
+        "Ofer"
+    ]
 }

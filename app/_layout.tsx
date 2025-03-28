@@ -32,6 +32,11 @@ export default function RootLayout() {
             headerShown: false
           }}
         />
+        <Stack.Screen name="recipe-by-category/index"
+          options={{
+            headerTransparent : true, headerTitle:''
+          }}
+        />
       </Stack>
     </UserContext.Provider>
     // </LogtoProvider>

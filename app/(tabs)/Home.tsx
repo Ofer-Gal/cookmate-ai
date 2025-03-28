@@ -18,8 +18,8 @@ const Home = () => {
             <IntroHead />
             {/* Recipe Generator */}
             <CreateRecipe />
-            {/* Category  List 
-            <CategoryList />*/}
+            {/* Category  List */}
+            <CategoryList />
         </ScrollView>
     )
 }

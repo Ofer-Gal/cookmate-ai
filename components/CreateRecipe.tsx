@@ -8,19 +8,21 @@ import {
     TouchableOpacity,
 } from "react-native";
 import React, { useRef } from "react";
-import Colors from "@/services/Colors";
 import Button from "./Button";
-import { AiModel, imageGenerator } from "@/services/GlobalApi";
+import { CreateNewRecipe, imageGenerator, picogenGenerator, UpdateUser, AiModel } from "@/services/GlobalApi";
 import prompts from "@/services/Prompt";
 import ActionSheet, { ActionSheetRef } from "react-native-actions-sheet";
 import LoadingDialog from "./LoadingDialog";
+import { UserContext } from "@/context/UserContext";
+import Colors from "@/services/Colors";
 
 const CreateRecipe = () => {
     const [userInput, setUserInput] = React.useState<string>();
-    const [recipeOptions, setRecipeOptions] = React.useState<any[]>([]);
+    const [recipeOptions, setRecipeOptions] = React.useState<any[]>();
     const [loading, setLoading] = React.useState<boolean>(false);
     const [openloading, setOpenLoading] = React.useState<boolean>(false);
     const actionSheetRef = useRef<ActionSheetRef>(null);
+    const { user, setUser } = React.useContext(UserContext);
 
     const onGenerate = async () => {
         if (!userInput) {
@@ -28,13 +30,13 @@ const CreateRecipe = () => {
             return;
         }
         setLoading(true);
-        const result = await AiModel(
+        const content: any = await AiModel(
             userInput + prompts.GENERATE_RECIPE_OPTION_PROMPT
         );
-        const content = result?.choices[0]?.message?.content;
+        // const content = result?.choices[0]?.message?.content; AiModel will do it
         console.log(content);
         if (content) {
-            setRecipeOptions(JSON.parse(content));
+            setRecipeOptions(content); //JSON.parse(content));
         } else {
             Alert.alert("Failed to generate recipe options");
         }
@@ -42,28 +44,58 @@ const CreateRecipe = () => {
         actionSheetRef.current?.show();
     };
 
-    const GenerateCopmleateRecipe = async (option: any) => {
+    const GeneratecompleteRecipe = async (option: any) => {
         actionSheetRef.current?.hide();
         setOpenLoading(true);
         const PROMPT =
-            "RecipieName:" +
+            "RecipeName:" +
             option.recipeName +
             +" Description: " +
             option.description +
             prompts.GENERATE_COMPLETE_RECIPE_PROMPT;
-        const result = await AiModel(PROMPT);
-        const content:any = result?.choices[0]?.message?.content;
-        const JSONContent = JSON.parse(content);
-        // console.log(content);
-        // console.log(JSONContent);
-        await GenerateRecipeImage(JSONContent?.imagePrompt);
+        const result: any = await AiModel(PROMPT);
+        console.log(result);
+        let content: any;
+        if (typeof result === "string") {
+            let JSONContent = '';
+            if (result.includes('json')) { JSONContent = result.replace('```json', '').replace('```', ''); }
+            const content = JSON.parse(JSONContent);
+        }
+        else if (result.error) {
+            Alert.alert("Failed to generate recipe");
+            setOpenLoading(false);
+            return;
+        }
+        else { content = result; }
+        // content = prompts.Complete;
+        const imageUrl = await GenerateRecipeImage(content.imagePrompt);
+        const insertedRecord = await SaveToDb(content, imageUrl)
+        console.log(insertedRecord);
         setOpenLoading(false);
     };
 
     const GenerateRecipeImage = async (prompt: string) => {
         const result = await imageGenerator(prompt);
-        console.log(result);
+        //   const result = await picogenGenerator(prompt);
+        // const result = 'https://image.picogen.io/202503/27/5/9/5930d462a94f0caa2fce7853b85d1b12.png'
+        return result;
     };
+
+    const SaveToDb = async (content: any, imageurl: string) => {
+        const { data } = await CreateNewRecipe({
+            ...content,
+            recipeImage: imageurl,
+            userEmail: user?.email,
+        });
+        console.log(user);
+        const updatedUser = await UpdateUser(user?.documentId, {
+            credits: user?.credits - 1,
+        });
+        console.log(updatedUser.data);
+        setUser(updatedUser.data);
+        return data;
+    }
+
     return (
         <View style={styles.container}>
             <Image
@@ -77,7 +109,7 @@ const CreateRecipe = () => {
                 style={styles.textInput}
                 multiline={true}
                 numberOfLines={4}
-                placeholder="What do you want to create? Add ingrediants"
+                placeholder="What do you want to create? Add ingredients"
                 onChangeText={(text) => setUserInput(text)}
                 value={userInput}
             />
@@ -91,7 +123,6 @@ const CreateRecipe = () => {
                 visible={openloading}
                 text={"Generating Recipe..."}
             />
-
             <ActionSheet ref={actionSheetRef}>
                 <View style={styles.actionSheetContainer}>
                     <Text style={styles.heading}>Select Recipes</Text>
@@ -100,15 +131,15 @@ const CreateRecipe = () => {
                             recipeOptions.map((item, index) => (
                                 <TouchableOpacity
                                     key={index}
-                                    style={styles.recepieItemContainer}
+                                    style={styles.recipeItemContainer}
                                     onPress={() =>
-                                        GenerateCopmleateRecipe(item)
+                                        GeneratecompleteRecipe(item)
                                     }
                                 >
-                                    <Text style={styles.recepieName}>
+                                    <Text style={styles.recipeName}>
                                         {item?.recipeName}
                                     </Text>
-                                    <Text style={styles.recepieDescription}>
+                                    <Text style={styles.recipeDescription}>
                                         {item?.description}
                                     </Text>
                                 </TouchableOpacity>
@@ -133,12 +164,12 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
     },
-    recepieName: {
+    recipeName: {
         fontFamily: "outfit-bold",
         fontSize: 16,
         textAlign: "center",
     },
-    recepieDescription: {
+    recipeDescription: {
         fontFamily: "outfit",
         color: Colors.GRAY,
     },
@@ -159,10 +190,9 @@ const styles = StyleSheet.create({
         textOverflow: "wrap",
     },
     actionSheetContainer: {
-        flex: 1,
         padding: 25,
     },
-    recepieItemContainer: {
+    recipeItemContainer: {
         borderWidth: 0.2,
         borderRadius: 15,
         padding: 15,

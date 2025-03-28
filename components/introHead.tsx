@@ -25,7 +25,8 @@ const IntroHead = () => {
                     fontFamily: 'outfit-bold',
                     fontSize: 20,
 
-                }}>Hello {user?.name}</Text>
+                }}>
+                    Hello {user?.name}</Text>
             </View>
             <View style={{
                 display: 'flex', gap: 10,

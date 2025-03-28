@@ -1,10 +1,13 @@
-import { View, Text, StyleSheet, FlatList, Image } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import { GetCategories } from "@/services/GlobalApi";
+import { useRouter } from "expo-router";
 
 export default function CategoryList() {
     const [categories, setCategories] = React.useState<any[]>([]);
 
+    const router = useRouter();
+    
     const GetCategoryList = async () => {
         const results = await GetCategories();
         // console.log(results.data);
@@ -21,15 +24,24 @@ export default function CategoryList() {
         <View>
             <Text style={styles.heading}>Category</Text>
             <View style={styles.container}>
-                { categories && categories.map((item) => (
-                    <View style={styles.categoryContainer} key={item.id}>
-                       <Image
+                {categories && categories.map((item) => (
+                    <TouchableOpacity style={styles.categoryContainer} key={item.id}
+                        onPress={() => { 
+                            router.push( {
+                                pathname: '/recipe-by-category',
+                                params: {
+                                    categoryName:item?.name
+                                },
+                            });
+                        }}
+                    >
+                        <Image
                             source={{ uri: item?.image?.url }}
                             style={styles.image}
-                        /> 
-                      {/*    <Text style={styles.subTitle}>{item.name}</Text>*/}
-                    </View>
-                ))}              
+                        />
+                        {/*    <Text style={styles.subTitle}>{item.name}</Text>*/}
+                    </TouchableOpacity>
+                ))}
             </View>
 
         </View>
