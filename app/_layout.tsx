@@ -1,7 +1,8 @@
 import { Stack } from "expo-router";
 import { useFonts } from 'expo-font';
-import { UserContext } from "@/context/UserContext";
+import { UserContext, RecipeContext } from "@/context/UserContext";
 import { useState } from "react";
+import Ionicons from "@expo/vector-icons/Ionicons";
 // import { LogtoProvider, LogtoConfig } from '@logto/rn';
 
 // const config: LogtoConfig = {
@@ -17,10 +18,13 @@ export default function RootLayout() {
     'Outfit-bold': require('@/assets/fonts/Outfit-Bold.ttf'),
   });
     const[user, setUser] = useState(null);
-
+    const [recipe, setRecipe] = useState(null);
+  
+  
   return (
     // <LogtoProvider config={config}>
     <UserContext.Provider value={{ user, setUser }}>
+      <RecipeContext.Provider value={{ recipe, setRecipe }}>
       <Stack>
         <Stack.Screen name="landing"
           options={{
@@ -37,7 +41,16 @@ export default function RootLayout() {
             headerTransparent : true, headerTitle:''
           }}
         />
-      </Stack>
+        <Stack.Screen name="recipe-detail/index"
+          options={{
+            headerTitle: 'Detail',
+            headerRight: () => (
+              <Ionicons name="share" size={24} color="black" />
+            )
+          }}
+        />
+        </Stack>
+      </RecipeContext.Provider>
     </UserContext.Provider>
     // </LogtoProvider>
   );

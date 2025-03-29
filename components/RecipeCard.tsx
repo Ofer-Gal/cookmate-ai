@@ -1,11 +1,25 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
+import React, { useContext } from 'react'
 import Colors from '@/services/Colors'
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import { RecipeContext } from '@/context/UserContext';
 
 const RecipeCard = (item: any) => {
+    const router = useRouter();
+    const { recipe, setRecipe } = useContext(RecipeContext);
     return (
-        <View style={styles.container}>
+        <TouchableOpacity
+            onPress={() => {
+                setRecipe(item.recipe);
+                router.push({
+                    pathname: `/recipe-detail`,
+                    // params: {
+                    //     recipeData: JSON.stringify(item.recipe),
+                    // },
+                })
+            }}
+            style={styles.container}>
 
             <Image source={{ uri: item.recipe?.recipeImage }}
                 style={styles.image}
@@ -19,7 +33,7 @@ const RecipeCard = (item: any) => {
                 </View>
             </LinearGradient>
 
-        </View>
+        </TouchableOpacity>
     )
 }
 
@@ -43,6 +57,6 @@ const styles = StyleSheet.create({
     textOnImageText: {
         color: Colors.WHITE,
         fontFamily: 'outfit',
-        fontSize:16
+        fontSize: 16
     }
 })
