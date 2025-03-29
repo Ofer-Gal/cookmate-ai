@@ -1,10 +1,10 @@
 import axios from "axios";
 import OpenAI from "openai";
+import { sleep } from "openai/core";
 
 const picogenGenerator = async (prompt: string) => {
     const apiUrl = "https://api.picogen.io/v1/job/generate";
     const apiToken = process.env.EXPO_PUBLIC_PICOGEN_API_KEY;
-
     const data = {
         prompt: prompt,
         ratio: "1:1",
@@ -25,16 +25,21 @@ const picogenGenerator = async (prompt: string) => {
 
 const getImageUrl = async (imageId: string) => {
     const apiUrl = `https://api.picogen.io/v1/job/get/${imageId}`;
-    try {
-        const response = await axios.get(apiUrl, {
-            headers: {
-                "API-Token": process.env.EXPO_PUBLIC_PICOGEN_API_KEY,
-            },
-        });
-        console.log(response.data);
-        return response.data[1].result; // the URL
-    } catch (error) {
-        console.error("Error:", error);
+    while (true) {        
+        try {
+            const response = await axios.get(apiUrl, {
+                headers: {
+                    "API-Token": process.env.EXPO_PUBLIC_PICOGEN_API_KEY,
+                },
+            });
+            if (response.data && response.data[1].result) {                
+                return response.data[1].result; // the URL
+            } else {
+                sleep(1000);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
     }
 };
 
@@ -50,7 +55,7 @@ const axiosClient = axios.create({
 const imageGenerator = async (prompt: string) => {
     console.log("imageGenerator:", prompt);
     try {
-        const BASE_URL = "https://76.76.21.21"; //aigurulab.tech";
+        const BASE_URL = "aigurulab.tech" ; // "https://76.76.21.21"
         const result = await axios.post(
             BASE_URL + "/api/generate-image",
             {
@@ -146,6 +151,7 @@ const GetUserByEmail = async (email: string) => {
 
 const CreateNewUser = async (data: any) => {
     try {
+        data = lowercaseKeys(data);
         const response = await axiosClient.post(`/user-lists`, { data: data });
         return response.data;
     } catch (error) {
@@ -155,6 +161,7 @@ const CreateNewUser = async (data: any) => {
 
 const UpdateUser = async (id: string, data: any) => {
     try {
+        data = lowercaseKeys(data);
         const response = await axiosClient.put(`/user-lists/${id}`, {
             data: data,
         });
@@ -187,13 +194,13 @@ const GetRecipeByCategory = async (category: string) => {
 ///api/recipes
 const CreateNewRecipe = async (data: any) => {
     try {
+        data = lowercaseKeys(data);
         const response = await axiosClient.post(`/recipes`, { data: data });
         return response.data;
     } catch (error) {
         console.error(error);
     }
 };
-
 
 
 export {
@@ -205,4 +212,14 @@ export {
     picogenGenerator,
     CreateNewRecipe,
     UpdateUser, GetRecipeByCategory
+};
+
+type OriginalObject = { [key: string]: any };
+type LowercaseKeysObject = { [key: string]: any };
+
+const lowercaseKeys = (obj: OriginalObject): LowercaseKeysObject => {
+    return Object.keys(obj).reduce((acc, key) => {
+        acc[key.substring(0, 1).toLowerCase() + key.substring(1)] = obj[key];
+        return acc;
+    }, {} as LowercaseKeysObject);
 };

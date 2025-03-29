@@ -26,7 +26,7 @@ const CreateRecipe = () => {
     const { user, setUser } = React.useContext(UserContext);
     const { recipe, setRecipe } = React.useContext(RecipeContext);
     const router= useRouter();
- 
+
     const onGenerate = async () => {
         if (!userInput) {
             Alert.alert("Please enter a details to generate");
@@ -40,11 +40,11 @@ const CreateRecipe = () => {
         console.log(content);
         if (content) {
             setRecipeOptions(content); //JSON.parse(content));
+            actionSheetRef.current?.show();
         } else {
             Alert.alert("Failed to generate recipe options");
         }
         setLoading(false);
-        actionSheetRef.current?.show();
     };
 
     const GeneratecompleteRecipe = async (option: any) => {
@@ -82,8 +82,8 @@ const CreateRecipe = () => {
     };
 
     const GenerateRecipeImage = async (prompt: string) => {
-        const result = await imageGenerator(prompt);
-        //   const result = await picogenGenerator(prompt);
+      //    const result = await imageGenerator(prompt);
+        const result = await picogenGenerator(prompt);
         // const result = 'https://image.picogen.io/202503/27/5/9/5930d462a94f0caa2fce7853b85d1b12.png'
         return result;
     };
@@ -93,6 +93,7 @@ const CreateRecipe = () => {
             ...content,
             recipeImage: imageurl,
             userEmail: user?.email,
+            categories: content.category.join(",")
         });
         console.log(user);
         const updatedUser = await UpdateUser(user?.documentId, {

@@ -8,8 +8,8 @@ const prompts = {
     - emoji icons for each ingredient as icon, quantity as quantity, along with detail step by step recipe as steps
     - Total Calories as calories (only number), Minutes to cook as cookTime and serving number as serveTo
     - relastic image Text prompt as per reciepe as imagePrompt
-    - Give me category List for recipe from [Breakfast, Lunch,Soup,Dinner,Salad,Drink,Cake] as category
-    - Give me response in JSON format only`,
+    - give me category list for recipe from [breakfast, lunch,soup,dinner,salad,drink,cake] as category
+    - give me response in json format only`,
     options: [
         {
             recipeName: "Crispy Hash Brown Breakfast Bowl",
