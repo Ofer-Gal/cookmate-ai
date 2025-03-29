@@ -13,8 +13,9 @@ import { CreateNewRecipe, imageGenerator, picogenGenerator, UpdateUser, AiModel 
 import prompts from "@/services/Prompt";
 import ActionSheet, { ActionSheetRef } from "react-native-actions-sheet";
 import LoadingDialog from "./LoadingDialog";
-import { UserContext } from "@/context/UserContext";
+import { RecipeContext, UserContext } from "@/context/UserContext";
 import Colors from "@/services/Colors";
+import { useRouter } from "expo-router";
 
 const CreateRecipe = () => {
     const [userInput, setUserInput] = React.useState<string>();
@@ -23,7 +24,9 @@ const CreateRecipe = () => {
     const [openloading, setOpenLoading] = React.useState<boolean>(false);
     const actionSheetRef = useRef<ActionSheetRef>(null);
     const { user, setUser } = React.useContext(UserContext);
-
+    const { recipe, setRecipe } = React.useContext(RecipeContext);
+    const router= useRouter();
+ 
     const onGenerate = async () => {
         if (!userInput) {
             Alert.alert("Please enter a details to generate");
@@ -71,6 +74,10 @@ const CreateRecipe = () => {
         const imageUrl = await GenerateRecipeImage(content.imagePrompt);
         const insertedRecord = await SaveToDb(content, imageUrl)
         console.log(insertedRecord);
+        setRecipe(insertedRecord);
+        router.push({
+                pathname: '/recipe-detail',    
+            })
         setOpenLoading(false);
     };
 
