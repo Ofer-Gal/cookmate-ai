@@ -43,7 +43,6 @@ export default function CategoryList() {
                     </TouchableOpacity>
                 ))}
             </View>
-
         </View>
     );
 }
@@ -57,7 +56,7 @@ const styles = StyleSheet.create({
         // alignItems: "center",
         // justifyContent: "center",
         // : 1,
-        marginTop: 15,
+        marginTop: 10,
         width: "100%",
         // backgroundColor: '#fff',
         // alignItems: 'center',

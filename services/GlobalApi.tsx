@@ -25,14 +25,14 @@ const picogenGenerator = async (prompt: string) => {
 
 const getImageUrl = async (imageId: string) => {
     const apiUrl = `https://api.picogen.io/v1/job/get/${imageId}`;
-    while (true) {        
+    while (true) {
         try {
             const response = await axios.get(apiUrl, {
                 headers: {
                     "API-Token": process.env.EXPO_PUBLIC_PICOGEN_API_KEY,
                 },
             });
-            if (response.data && response.data[1].result) {                
+            if (response.data && response.data[1].result) {
                 return response.data[1].result; // the URL
             } else {
                 sleep(1000);
@@ -44,7 +44,7 @@ const getImageUrl = async (imageId: string) => {
 };
 
 const axiosClient = axios.create({
-    baseURL: "http://10.0.0.9:1337/api",
+    baseURL: "https://cookmate-ai-admin.onrender.com/api", // "http://10.0.0.9:1337/api",
     headers: {
         Authorization: `Bearer ${process.env.EXPO_PUBLIC_STRAPI_API_KEY}`,
         "Content-Type": "application/json",
@@ -55,7 +55,7 @@ const axiosClient = axios.create({
 const imageGenerator = async (prompt: string) => {
     console.log("imageGenerator:", prompt);
     try {
-        const BASE_URL = "aigurulab.tech" ; // "https://76.76.21.21"
+        const BASE_URL = "aigurulab.tech"; // "https://76.76.21.21"
         const result = await axios.post(
             BASE_URL + "/api/generate-image",
             {
@@ -182,9 +182,26 @@ const GetCategories = async () => {
     }
 };
 
-const GetRecipeByCategory = async (category: string) => {
+const GetRecipesByCategoryOrLimit = async (type: string, value: string) => {     //category: string, limit: number = 0, user: string = '') => {
+    let query = '/recipes';
     try {
-        const response = await axiosClient.get('/recipes?filters[categories][$contains]=' + category);
+        switch (type) {
+            case 'category': query += '?filters[categories][$contains]=' + value;
+                break;
+            case 'limit':
+                query += '?sort=id:desc&pagination[pageSize]=' + value;
+                break;
+            case 'user':
+                query += '?filters[userEmail][$eq]=' + value;
+                break;
+            default:
+                query += '?sort=recipeName';
+                break;
+        }
+        // let query = category ? '/recipes?filters[categories][$contains]=' + category : '/recipes?sort=recipeName';
+        // query = (limit > 0) ? query.replace('recipeName', 'id:desc') + '&pagination[pageSize]=' + limit : query;
+        // console.log(query);
+        const response = await axiosClient.get(query);
         return response.data.data;
     } catch (error) {
         console.error(error);
@@ -202,7 +219,43 @@ const CreateNewRecipe = async (data: any) => {
     }
 };
 
+const SaveUserFavRecipe = (data: any) => {
+    try {
+        return axiosClient.post('/user-favorites', {
+            data: data
+        })
+    }
+    catch (error) {
+        console.error(error);
+    }
+}
 
+const GetSavedFavorites = async (email: string, documentId: string = '') => {
+    try {
+        let query = '[userEmail][$eq]=' + email;
+        if (documentId) query += '&filters[recipeDocId][$eq]=' + documentId;
+        const fav = await axiosClient.get('/user-favorites?filters' + query +'&fields=recipeDocId');
+        const inQuery = fav.data.data.map((f: { recipeDocId: string; }) => 'filters[documentId][$in]=' + f.recipeDocId )  
+        //?filters[documentId][$in][0]=ae7w4attcd4g9p5f0r4nc4ch&filters[documentId][$in][1]=olcncis2guzupwrabq5w7mh5
+        console.log(inQuery);
+        const response = await axiosClient.get('/recipes?' + inQuery.join('&'));
+        //and... fav.data.documentId
+        return response.data.data;
+    }
+    catch (error) {
+        console.error(error);
+    }
+}
+
+
+const RemoveUserFavRecipe = async (data: any) => {
+    try {
+        return axiosClient.delete('/user-favorites/' + data.documentId);
+    }
+    catch (error) {
+        console.error(error);
+    }
+}
 export {
     GetUserByEmail,
     CreateNewUser,
@@ -211,7 +264,8 @@ export {
     imageGenerator,
     picogenGenerator,
     CreateNewRecipe,
-    UpdateUser, GetRecipeByCategory
+    UpdateUser, GetRecipesByCategoryOrLimit,
+    SaveUserFavRecipe, RemoveUserFavRecipe, GetSavedFavorites
 };
 
 type OriginalObject = { [key: string]: any };

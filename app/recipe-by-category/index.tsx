@@ -1,7 +1,7 @@
 
 import RecipeCard from '@/components/RecipeCard';
 import Colors from '@/services/Colors';
-import { GetRecipeByCategory } from '@/services/GlobalApi';
+import { GetRecipesByCategoryOrLimit } from '@/services/GlobalApi';
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
@@ -12,7 +12,7 @@ const RecipeByCategory = () => {
     const [recipeList, setRecipeLists] = React.useState([])
 
     const getRecipesByCategory = async () => {
-        setRecipeLists(await GetRecipeByCategory(categoryName as string))
+        setRecipeLists(await GetRecipesByCategoryOrLimit('category',categoryName as string))
     }
 
     React.useEffect(() => {

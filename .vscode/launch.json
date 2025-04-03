@@ -17,8 +17,20 @@
             "request": "launch",
             "name": "Debug in Chrome",
             "url": "http://localhost:8081", // Or the specific url that expo gives you.
-            "webRoot": "${workspaceFolder}"
+            "webRoot": "${workspaceFolder}",
+            "runtimeArgs": [
+                "--remote-debugging-port=8081"
+            ] 
+        },
+        {
+            "type": "msedge", // or "edge"
+            "request": "launch",
+            "name": "Debug in Edge",
+            "url": "http://localhost:8081", // Or the specific url that expo gives you.
+            "webRoot": "${workspaceFolder}",
+            "runtimeArgs": [
+                "--remote-debugging-port=8081"
+            ]
         }  
-
     ]
 }

@@ -2,55 +2,54 @@ import { FlatList, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import Colors from '@/services/Colors'
 import { GetRecipesByCategoryOrLimit } from '@/services/GlobalApi'
-import RecipeCard from '@/components/RecipeCard'
-// import { UserContext } from '@/context/UserContext'
+import RecipeCardHome from './RecipeCardHome'
 
-const Explore = () => { //All recipes
+const LatestRecipes = () => {
 
-    // const { user, setUser } = React.useContext(UserContext)
     const [recipeList, setRecipeList] = React.useState([])
     const [loading, setLoading] = React.useState(false)
-    const [activeTab, setActiveTab] = React.useState(1)
 
     const fetchRecipes = async () => {
-        const res = await GetRecipesByCategoryOrLimit('', '')
         setLoading(true)
+        const res = await GetRecipesByCategoryOrLimit('limit','6')
         setRecipeList(res)
         setLoading(false)
     }
 
     React.useEffect(() => {
-        fetchRecipes();
+        fetchRecipes()
     }, [])
-
-
-
+    
     return (
         <View style={styles.container}>
-            <Text style={styles.header}>Explore</Text>
+            <Text style={styles.header}>Latest Recipes</Text>
             <FlatList
                 data={recipeList}
                 refreshing={loading}
+                horizontal={true}
                 // onRefresh={GetRecipeByCategory}
-                renderItem={({ item, index }) => {
+                renderItem={({ item, index }:any) => {
                     return (
-                        <View style={{ flex: 1 }} key={index}>
-                            <RecipeCard item={item} />
+                        <View >
+                            <RecipeCardHome item={item} />        
                         </View>
                     )
                 }}
-                numColumns={2}
+                // numColumns={2}
                 showsVerticalScrollIndicator={false}
-                keyExtractor={(item: any) => item.documentId}
             />
+
+
         </View>
     )
 }
-export default Explore
+
+export default LatestRecipes
+
 const styles = StyleSheet.create({
 
     container: {
-        padding: 20,
+        padding: 10,
         backgroundColor: Colors.WHITE,
         height: '100%',
     },
@@ -59,14 +58,4 @@ const styles = StyleSheet.create({
         fontSize: 30,
         marginTop: 15,
     }
-
 })
-
-/**
- * {
-                // flex: 1,
-                height: '100%',
-                backgroundColor: Colors.WHITE,
-                // justifyContent: 'center', alignItems: 'center'>
-            }
- */
